@@ -82,6 +82,19 @@ function getViewManagerConfig(viewManagerName) {
  */
 
 class ViewPager extends React.Component<ViewPagerProps> {
+  constructor(props: any) {
+    super(props);
+
+    // this.state = {
+    //   pages: [],
+    // };
+
+    console.log(props.children);
+    this.state = {
+      index: 2,
+    };
+  }
+
   componentDidMount() {
     // On iOS we do it directly on the native side
     if (Platform.OS === 'android') {
@@ -119,6 +132,14 @@ class ViewPager extends React.Component<ViewPagerProps> {
     if (this.props.onPageSelected) {
       this.props.onPageSelected(e);
     }
+    if (e.nativeEvent.position > 0) {
+      this.setState(prev => {
+        return {
+          ...prev,
+          index: prev.index + 1,
+        };
+      });
+    }
   };
 
   /**
@@ -154,7 +175,9 @@ class ViewPager extends React.Component<ViewPagerProps> {
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}
-        children={childrenWithOverriddenStyle(this.props.children)}
+        children={childrenWithOverriddenStyle(
+          this.props.aadd.slice(0, this.state.index),
+        )}
       />
     );
   }
