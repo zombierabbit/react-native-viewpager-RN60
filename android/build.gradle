@@ -38,5 +38,9 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     api 'com.facebook.react:react-native:+'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    api("androidx.annotation:annotation:1.1.0")
+    implementation("androidx.core:core:1.1.0")
+    api("androidx.fragment:fragment:1.1.0")
+    api("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("androidx.collection:collection:1.1.0")
 }

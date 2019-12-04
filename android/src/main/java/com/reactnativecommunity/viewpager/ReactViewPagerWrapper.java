@@ -4,7 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import androidx.viewpager2.widget.ViewPager2;
+import com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2;
+
 
 public class ReactViewPagerWrapper extends LinearLayout {
 
