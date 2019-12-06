@@ -7,7 +7,7 @@
  * @flow
  */
 
-export const PAGES = 5;
+export const PAGES = 10;
 export const BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
 export const IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1410/20141008tleBaldridge001h990.jpg',

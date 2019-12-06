@@ -1,6 +1,7 @@
 package com.reactnativecommunity.viewpager;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -58,9 +59,15 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
 
         public void bind(View reactNativeView) {
             LinearLayout rootview = (LinearLayout) itemView;
-            rootview.addView(reactNativeView);
-
-
+            Log.d("ReactPageAdapter", "bind: " + rootview.toString());
+            Log.d("ReactPageAdapter", "bind: " + reactNativeView.toString());
+            if(reactNativeView.getParent() != null){
+                if(rootview.hashCode() != reactNativeView.getParent().hashCode()) {
+                    rootview.addView(reactNativeView);
+                }
+            } else {
+                rootview.addView(reactNativeView);
+            }
         }
     }
 }

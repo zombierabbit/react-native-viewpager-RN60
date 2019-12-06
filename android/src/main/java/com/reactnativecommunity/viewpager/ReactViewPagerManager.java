@@ -27,7 +27,7 @@ import com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2;
 import java.util.Map;
 
 
-public class ReactViewPagerManager extends ViewGroupManager<ReactViewPagerWrapper> {
+public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     private static final String REACT_CLASS = "RNCViewPager";
     private static final int COMMAND_SET_PAGE = 1;
@@ -41,30 +41,33 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPagerWrappe
 
     @NonNull
     @Override
-    protected ReactViewPagerWrapper createViewInstance(@NonNull ThemedReactContext reactContext) {
-        ReactViewPagerWrapper reactViewPagerWrapper = new ReactViewPagerWrapper(new ViewPager2(reactContext), reactContext);
-        reactViewPagerWrapper.getViewPager().setBackgroundColor(Color.parseColor("#328ce6"));
-        return reactViewPagerWrapper;
+    protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
+        ViewPager2 vp = new ViewPager2(reactContext);
+        vp.setBackgroundColor(Color.parseColor("#328ce6"));
+        vp.setAdapter(new ReactPageAdapter());
+        return vp;
     }
 
     @Override
-    public void addView(ReactViewPagerWrapper parent, View child, int index) {
-        super.addView(parent, child, index);
+    public void addView(ViewPager2 parent, View child, int index) {
         if(child == null) {
             return;
         }
-        parent.getPageAdapter().addChild(child, index);
-        parent.invalidate();
+        int hc = child.hashCode();
+        Log.d("ReactPageAdapter", "addView: " + hc);
+        Log.d("ReactPageAdapter", "addView: " + child.getId());
+        ((ReactPageAdapter)parent.getAdapter()).addChild(child,index);
     }
 
     @Override
-    public int getChildCount(ReactViewPagerWrapper parent) {
-        return parent.getPageAdapter().getItemCount();
+    public int getChildCount(ViewPager2 parent) {
+        return parent.getAdapter().getItemCount();
     }
 
+
     @Override
-    public View getChildAt(ReactViewPagerWrapper parent, int index) {
-        return parent.getPageAdapter().getChildAt(index);
+    public View getChildAt(ViewPager2 parent, int index) {
+        return ((ReactPageAdapter)parent.getAdapter()).getChildAt(index);
     }
 
     @Override
@@ -74,12 +77,12 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPagerWrappe
 
 
     @ReactProp(name = "scrollEnabled", defaultBoolean = true)
-    public void setScrollEnabled(ReactViewPagerWrapper viewPager, boolean value) {
+    public void setScrollEnabled(ViewPager2 viewPager, boolean value) {
         //TODO Implement
     }
 
     @ReactProp(name = "orientation")
-    public void setOrientation(ReactViewPagerWrapper viewPager, String value) {
+    public void setOrientation(ViewPager2 viewPager, String value) {
         //TODO Implement
     }
 
@@ -101,28 +104,28 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPagerWrappe
                 COMMAND_SET_PAGE_WITHOUT_ANIMATION);
     }
 
-    @Override
-    public void receiveCommand(@NonNull ReactViewPagerWrapper root, String commandId, @Nullable ReadableArray args) {
-        super.receiveCommand(root, commandId, args);
-        Assertions.assertNotNull(args);
-        Log.d("", "receiveCommand: "+ commandId);
-//        switch (commandId) {
-//            case COMMAND_SET_PAGE: {
-////                viewPager.setCurrentItemFromJs(args.getInt(0), true);
-//                return;
-//
-//            }
-//            case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-////                viewPager.setCurrentItemFromJs(args.getInt(0), false);
-//                return;
-//            }
-//            default:
-//                throw new IllegalArgumentException(String.format(
-//                        "Unsupported command %d received by %s.",
-//                        commandId,
-//                        getClass().getSimpleName()));
-//        }
-    }
+//    @Override
+//    public void receiveCommand(@NonNull ReactViewPagerWrapper root, String commandId, @Nullable ReadableArray args) {
+//        super.receiveCommand(root, commandId, args);
+//        Assertions.assertNotNull(args);
+//        Log.d("", "receiveCommand: "+ commandId);
+////        switch (commandId) {
+////            case COMMAND_SET_PAGE: {
+//////                viewPager.setCurrentItemFromJs(args.getInt(0), true);
+////                return;
+////
+////            }
+////            case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
+//////                viewPager.setCurrentItemFromJs(args.getInt(0), false);
+////                return;
+////            }
+////            default:
+////                throw new IllegalArgumentException(String.format(
+////                        "Unsupported command %d received by %s.",
+////                        commandId,
+////                        getClass().getSimpleName()));
+////        }
+//    }
 
 
     public void receiveCommandOld(
@@ -151,7 +154,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPagerWrappe
 
 
     @ReactProp(name = "pageMargin", defaultFloat = 0)
-    public void setPageMargin(ReactViewPagerWrapper pager, float margin) {
+    public void setPageMargin(ViewPager2 pager, float margin) {
         //TODO implement
     }
 
