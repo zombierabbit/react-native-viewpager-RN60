@@ -43,7 +43,6 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     @Override
     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
         ViewPager2 vp = new ViewPager2(reactContext);
-        vp.setBackgroundColor(Color.parseColor("#328ce6"));
         ReactPageAdapter adapter = new ReactPageAdapter();
         adapter.setHasStableIds(true);
         vp.setAdapter(new ReactPageAdapter());
@@ -77,12 +76,12 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @ReactProp(name = "scrollEnabled", defaultBoolean = true)
     public void setScrollEnabled(ViewPager2 viewPager, boolean value) {
-        //TODO Implement
+        viewPager.setUserInputEnabled(value);
     }
 
     @ReactProp(name = "orientation")
     public void setOrientation(ViewPager2 viewPager, String value) {
-        //TODO Implement
+        viewPager.setOrientation(value.equals("horizontal") ? ViewPager2.ORIENTATION_HORIZONTAL : ViewPager2.ORIENTATION_VERTICAL);
     }
 
 
@@ -94,6 +93,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
                 PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected"));
     }
 
+
     @Override
     public Map<String, Integer> getCommandsMap() {
         return MapBuilder.of(
@@ -103,50 +103,25 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
                 COMMAND_SET_PAGE_WITHOUT_ANIMATION);
     }
 
-//    @Override
-//    public void receiveCommand(@NonNull ReactViewPagerWrapper root, String commandId, @Nullable ReadableArray args) {
-//        super.receiveCommand(root, commandId, args);
-//        Assertions.assertNotNull(args);
-//        Log.d("", "receiveCommand: "+ commandId);
-////        switch (commandId) {
-////            case COMMAND_SET_PAGE: {
-//////                viewPager.setCurrentItemFromJs(args.getInt(0), true);
-////                return;
-////
-////            }
-////            case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-//////                viewPager.setCurrentItemFromJs(args.getInt(0), false);
-////                return;
-////            }
-////            default:
-////                throw new IllegalArgumentException(String.format(
-////                        "Unsupported command %d received by %s.",
-////                        commandId,
-////                        getClass().getSimpleName()));
-////        }
-//    }
-
-
-    public void receiveCommandOld(
-            ReactViewPager viewPager,
-            int commandType,
-            @Nullable ReadableArray args) {
-        Assertions.assertNotNull(viewPager);
+    @Override
+    public void receiveCommand(@NonNull ViewPager2 root, int commandId, @Nullable ReadableArray args) {
+        super.receiveCommand(root, commandId, args);
+        Assertions.assertNotNull(root);
         Assertions.assertNotNull(args);
-        switch (commandType) {
+        switch (commandId) {
             case COMMAND_SET_PAGE: {
-                viewPager.setCurrentItemFromJs(args.getInt(0), true);
+                //viewPager.setCurrentItemFromJs(args.getInt(0), true);
                 return;
 
             }
             case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-                viewPager.setCurrentItemFromJs(args.getInt(0), false);
+                //viewPager.setCurrentItemFromJs(args.getInt(0), false);
                 return;
             }
             default:
                 throw new IllegalArgumentException(String.format(
                         "Unsupported command %d received by %s.",
-                        commandType,
+                        commandId,
                         getClass().getSimpleName()));
         }
     }
@@ -154,7 +129,8 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @ReactProp(name = "pageMargin", defaultFloat = 0)
     public void setPageMargin(ViewPager2 pager, float margin) {
-        //TODO implement
+        int pageMargin = (int)PixelUtil.toPixelFromDIP(margin);
+        pager.setPadding(pageMargin,pageMargin,pageMargin,pageMargin);
     }
 
 }
