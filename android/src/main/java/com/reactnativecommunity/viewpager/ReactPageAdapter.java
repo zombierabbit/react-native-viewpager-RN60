@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -34,9 +35,9 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
     @NonNull
     @Override
     public ReactAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LinearLayout rootView = new LinearLayout(parent.getContext());
+        FrameLayout rootView = new FrameLayout(parent.getContext());
         rootView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        rootView.setOrientation(LinearLayout.HORIZONTAL);
+//        rootView.setOrientation(LinearLayout.HORIZONTAL);
         rootView.setBackgroundColor(Color.parseColor("#32a852"));
         return new ReactAdapterViewHolder(rootView);
     }
@@ -78,23 +79,23 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
 
     class ReactAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        public ReactAdapterViewHolder(@NonNull LinearLayout itemView) {
+        public ReactAdapterViewHolder(@NonNull FrameLayout itemView) {
             super(itemView);
         }
 
         public void bind(int position) {
             View reactNativeView = children.get(position);
-            LinearLayout rootview = (LinearLayout) itemView;
+            FrameLayout rootview = (FrameLayout) itemView;
             View asd = new View(reactNativeView.getContext());
             asd.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             asd.setBackgroundColor(Color.parseColor(mColors[position]));
 
             Log.d("ReactPageAdapter", "bind: " + rootview.getChildCount());
-            if(rootview.getChildCount() > 0){
-                rootview.removeViewAt(position);
-            }
+//            if(rootview.getChildCount() > 0){
+//                rootview.removeViewAt(position);
+//            }
             // THIS DOES NOT
-//            rootview.addView(asd);
+            rootview.addView(asd);
             //THIS WORKS
             rootview.setBackgroundColor(Color.parseColor(mColors[position]));
 
