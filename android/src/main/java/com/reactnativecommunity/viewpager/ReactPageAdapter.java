@@ -37,14 +37,12 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
     public ReactAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FrameLayout rootView = new FrameLayout(parent.getContext());
         rootView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-//        rootView.setOrientation(LinearLayout.HORIZONTAL);
         rootView.setBackgroundColor(Color.parseColor("#32a852"));
         return new ReactAdapterViewHolder(rootView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReactAdapterViewHolder holder, int position) {
-        Log.d("ReactPageAdapter", "onBindViewHolder: " + position);
         holder.bind(position);
     }
 
@@ -86,30 +84,16 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
         public void bind(int position) {
             View reactNativeView = children.get(position);
             FrameLayout rootview = (FrameLayout) itemView;
-            View asd = new View(reactNativeView.getContext());
-            asd.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-            asd.setBackgroundColor(Color.parseColor(mColors[position]));
-
-            Log.d("ReactPageAdapter", "bind: " + rootview.getChildCount());
-//            if(rootview.getChildCount() > 0){
-//                rootview.removeViewAt(position);
-//            }
-            // THIS DOES NOT
-            rootview.addView(asd);
-            //THIS WORKS
-            rootview.setBackgroundColor(Color.parseColor(mColors[position]));
-
-
-//            Log.d("ReactPageAdapter", "bind: " + rootview.toString());
-//            Log.d("ReactPageAdapter", "bind: " + reactNativeView.toString());
-//            if (reactNativeView.getParent() != null) {
-//                Log.d("ReactPageAdapter", "bind: " + reactNativeView.toString());
-////                if (rootview.hashCode() != reactNativeView.getParent().hashCode()) {
-////                    rootview.addView(reactNativeView);
-////                }
-//            } else {
-//                rootview.addView(reactNativeView);
-//            }
+            Log.d("ReactPageAdapter", "before ChildCount : " + rootview.getChildCount());
+            if (reactNativeView.getParent() != null) {
+                Log.d("ReactPageAdapter", "bind: " + reactNativeView.toString());
+            } else {
+                rootview.addView(reactNativeView);
+                if (rootview.getChildCount() > 1) {
+                    rootview.removeViewAt(0);
+                }
+                Log.d("ReactPageAdapter", "after ChildCount : " + rootview.getChildCount());
+            }
         }
 
     }

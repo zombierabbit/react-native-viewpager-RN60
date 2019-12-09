@@ -55,9 +55,6 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
         if(child == null) {
             return;
         }
-        int hc = child.hashCode();
-        Log.d("ReactPageAdapter", "addView: " + hc);
-        Log.d("ReactPageAdapter", "addView: " + child.getId());
         ((ReactPageAdapter)parent.getAdapter()).addChild(child,index);
     }
 
