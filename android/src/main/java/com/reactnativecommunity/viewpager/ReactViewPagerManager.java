@@ -44,6 +44,8 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
         ViewPager2 vp = new ViewPager2(reactContext);
         vp.setBackgroundColor(Color.parseColor("#328ce6"));
+        ReactPageAdapter adapter = new ReactPageAdapter();
+        adapter.setHasStableIds(true);
         vp.setAdapter(new ReactPageAdapter());
         return vp;
     }
