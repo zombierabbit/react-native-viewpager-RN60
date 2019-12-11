@@ -16,28 +16,11 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
 
     private ArrayList<View> children = new ArrayList<>();
 
-    public String[] mColors = {
-            "#39add1", // light blue
-            "#3079ab", // dark blue
-            "#c25975", // mauve
-            "#e15258", // red
-            "#f9845b", // orange
-            "#838cc7", // lavender
-            "#7d669e", // purple
-            "#53bbb4", // aqua
-            "#51b46d", // green
-            "#e0ab18", // mustard
-            "#637a91", // dark gray
-            "#f092b0", // pink
-            "#b7c0c7"  // light gray
-    };
-
     @NonNull
     @Override
     public ReactAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FrameLayout rootView = new FrameLayout(parent.getContext());
         rootView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        rootView.setBackgroundColor(Color.parseColor("#32a852"));
         return new ReactAdapterViewHolder(rootView);
     }
 
@@ -50,12 +33,6 @@ public class ReactPageAdapter extends RecyclerView.Adapter<ReactPageAdapter.Reac
         this.children.add(index, children);
         notifyDataSetChanged();
 
-    }
-
-    public void setChildren(ArrayList<View> children) {
-        this.children.clear();
-        this.children = children;
-        notifyDataSetChanged();
     }
 
     @Override

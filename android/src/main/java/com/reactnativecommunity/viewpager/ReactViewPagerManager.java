@@ -8,11 +8,14 @@
 package com.reactnativecommunity.viewpager;
 
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.facebook.infer.annotation.Assertions;
@@ -20,11 +23,18 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2;
 
 import java.util.Map;
+
+import static com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
+import static com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING;
+import static com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE;
+import static com.reactnativecommunity.viewpager.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
 
 
 public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
@@ -32,6 +42,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     private static final String REACT_CLASS = "RNCViewPager";
     private static final int COMMAND_SET_PAGE = 1;
     private static final int COMMAND_SET_PAGE_WITHOUT_ANIMATION = 2;
+    private EventDispatcher eventDispatcher;
 
     @NonNull
     @Override
@@ -42,10 +53,48 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     @NonNull
     @Override
     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
-        ViewPager2 vp = new ViewPager2(reactContext);
+        final ViewPager2 vp = new ViewPager2(reactContext);
         ReactPageAdapter adapter = new ReactPageAdapter();
         adapter.setHasStableIds(true);
         vp.setAdapter(new ReactPageAdapter());
+        vp.setOrientation(ORIENTATION_HORIZONTAL);
+        eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+        vp.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                eventDispatcher.dispatchEvent(
+                        new PageScrollEvent(vp.getId(), position, positionOffset));
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                eventDispatcher.dispatchEvent(
+                        new PageSelectedEvent(vp.getId(), position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                String pageScrollState;
+                switch (state) {
+                    case SCROLL_STATE_IDLE:
+                        pageScrollState = "idle";
+                        break;
+                    case SCROLL_STATE_DRAGGING:
+                        pageScrollState = "dragging";
+                        break;
+                    case SCROLL_STATE_SETTLING:
+                        pageScrollState = "settling";
+                        break;
+                    default:
+                        throw new IllegalStateException("Unsupported pageScrollState");
+                }
+                eventDispatcher.dispatchEvent(
+                        new PageScrollStateChangedEvent(vp.getId(), pageScrollState));
+            }
+        });
         return vp;
     }
 
@@ -104,18 +153,20 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     }
 
     @Override
-    public void receiveCommand(@NonNull ViewPager2 root, int commandId, @Nullable ReadableArray args) {
+    public void receiveCommand(@NonNull final ViewPager2 root, int commandId, @Nullable final ReadableArray args) {
         super.receiveCommand(root, commandId, args);
         Assertions.assertNotNull(root);
         Assertions.assertNotNull(args);
         switch (commandId) {
             case COMMAND_SET_PAGE: {
-                //viewPager.setCurrentItemFromJs(args.getInt(0), true);
+                root.setCurrentItem(args.getInt(0), true);
                 return;
 
             }
             case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-                //viewPager.setCurrentItemFromJs(args.getInt(0), false);
+                // there is a bug here
+                root.setCurrentItem(args.getInt(0), false);
+                eventDispatcher.dispatchEvent(new PageSelectedEvent(root.getId(), args.getInt(0)));
                 return;
             }
             default:
