@@ -15,6 +15,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -53,57 +55,21 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     @NonNull
     @Override
     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
+
         final ViewPager2 vp = new ViewPager2(reactContext);
-        ReactPageAdapter adapter = new ReactPageAdapter();
-        adapter.setHasStableIds(true);
-        vp.setAdapter(new ReactPageAdapter());
+        FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
+        vp.setAdapter(adapter);
         vp.setOrientation(ORIENTATION_HORIZONTAL);
         eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-        vp.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                eventDispatcher.dispatchEvent(
-                        new PageScrollEvent(vp.getId(), position, positionOffset));
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                eventDispatcher.dispatchEvent(
-                        new PageSelectedEvent(vp.getId(), position));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
-                String pageScrollState;
-                switch (state) {
-                    case SCROLL_STATE_IDLE:
-                        pageScrollState = "idle";
-                        break;
-                    case SCROLL_STATE_DRAGGING:
-                        pageScrollState = "dragging";
-                        break;
-                    case SCROLL_STATE_SETTLING:
-                        pageScrollState = "settling";
-                        break;
-                    default:
-                        throw new IllegalStateException("Unsupported pageScrollState");
-                }
-                eventDispatcher.dispatchEvent(
-                        new PageScrollStateChangedEvent(vp.getId(), pageScrollState));
-            }
-        });
         return vp;
     }
 
     @Override
     public void addView(ViewPager2 parent, View child, int index) {
-        if(child == null) {
+        if (child == null) {
             return;
         }
-        ((ReactPageAdapter)parent.getAdapter()).addChild(child,index);
+        ((FragmentAdapter) parent.getAdapter()).addFragment(child, index);
     }
 
     @Override
@@ -114,7 +80,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @Override
     public View getChildAt(ViewPager2 parent, int index) {
-        return ((ReactPageAdapter)parent.getAdapter()).getChildAt(index);
+        return ((FragmentAdapter) parent.getAdapter()).getChildAt(index);
     }
 
     @Override
@@ -180,8 +146,8 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @ReactProp(name = "pageMargin", defaultFloat = 0)
     public void setPageMargin(ViewPager2 pager, float margin) {
-        int pageMargin = (int)PixelUtil.toPixelFromDIP(margin);
-        pager.setPadding(pageMargin,pageMargin,pageMargin,pageMargin);
+        int pageMargin = (int) PixelUtil.toPixelFromDIP(margin);
+        pager.setPadding(pageMargin, pageMargin, pageMargin, pageMargin);
     }
 
 }
